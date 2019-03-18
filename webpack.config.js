@@ -8,5 +8,8 @@ module.exports = {
     fs: "empty"
   },
   target: "web",
-  watch: true
+  watch: true,
+  devServer: {
+    contentBase: "./dist"
+  }
 };
