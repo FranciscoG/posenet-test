@@ -1,7 +1,6 @@
 import * as posenet from "@tensorflow-models/posenet";
 import Stats from "./stats.min";
-import * as dat from "dat.gui";
-import utils from "./utils";
+import { drawBoundingBox, drawKeypoints, drawSkeleton } from "./utils";
 import setupDat from "./setupDat";
 import { isMobile } from "./mobile-check";
 import { loadVideo } from "./camera";
@@ -132,13 +131,13 @@ function detectPoseInRealTime(video, canvas, ctx) {
     poses.forEach(({ score, keypoints }) => {
       if (score >= minPoseConfidence) {
         if (guiState.output.showPoints) {
-          (0, utils.drawKeypoints)(keypoints, minPartConfidence, ctx);
+          drawKeypoints(keypoints, minPartConfidence, ctx);
         }
         if (guiState.output.showSkeleton) {
-          (0, utils.drawSkeleton)(keypoints, minPartConfidence, ctx);
+          drawSkeleton(keypoints, minPartConfidence, ctx);
         }
         if (guiState.output.showBoundingBox) {
-          (0, utils.drawBoundingBox)(keypoints, ctx);
+          drawBoundingBox(keypoints, ctx);
         }
       }
     });
