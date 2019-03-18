@@ -1,5 +1,5 @@
-var tf = require("@tensorflow/tfjs");
-var posenet = require("@tensorflow-models/posenet");
+const tf = require("@tensorflow/tfjs");
+const posenet = require("@tensorflow-models/posenet");
 
 const color = "aqua";
 const boundingBoxColor = "red";

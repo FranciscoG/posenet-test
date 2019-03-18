@@ -11,5 +11,23 @@ module.exports = {
   watch: true,
   devServer: {
     contentBase: "./dist"
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        default: false,
+        vendors: false,
+
+        // vendor chunk
+        vendor: {
+          name: "vendor",
+          // sync + async chunks
+          chunks: "all",
+
+          // import file path containing node_modules
+          test: /node_modules/
+        }
+      }
+    }
   }
 };

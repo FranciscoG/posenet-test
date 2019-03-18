@@ -1,7 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import Stats from "./stats.min";
 import * as dat from "dat.gui";
-import demo_util from "./utils";
+import utils from "./utils";
 import setupDat from "./setupDat";
 import { isMobile } from "./mobile-check";
 import { loadVideo } from "./camera";
@@ -11,6 +11,8 @@ import { loadVideo } from "./camera";
 const videoWidth = 600;
 const videoHeight = 500;
 const stats = new Stats();
+const canvas = document.getElementById("output");
+const ctx = canvas.getContext("2d");
 
 const guiState = {
   algorithm: "multi-pose",
@@ -50,9 +52,7 @@ function setupFPS() {
  * Feeds an image to posenet to estimate poses - this is where the magic
  * happens. This function loops with a requestAnimationFrame method.
  */
-function detectPoseInRealTime(video, net) {
-  const canvas = document.getElementById("output");
-  const ctx = canvas.getContext("2d");
+function detectPoseInRealTime(video, canvas, ctx) {
   // since images are being fed from a webcam
   const flipHorizontal = true;
 
@@ -72,6 +72,8 @@ function detectPoseInRealTime(video, net) {
     }
 
     // Begin monitoring code for frames per second
+    // stats is declared externally so this is a side effect
+    // TODO: pass stats as an argument to make this more functional
     stats.begin();
 
     // Scale an image down to a certain factor. Too large of an image will slow
@@ -119,6 +121,9 @@ function detectPoseInRealTime(video, net) {
       ctx.translate(-videoWidth, 0);
       ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
       ctx.restore();
+    } else {
+      ctx.fillStyle = "gray";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
     // For each pose (i.e. person) detected in an image, loop through the poses
@@ -127,13 +132,13 @@ function detectPoseInRealTime(video, net) {
     poses.forEach(({ score, keypoints }) => {
       if (score >= minPoseConfidence) {
         if (guiState.output.showPoints) {
-          (0, demo_util.drawKeypoints)(keypoints, minPartConfidence, ctx);
+          (0, utils.drawKeypoints)(keypoints, minPartConfidence, ctx);
         }
         if (guiState.output.showSkeleton) {
-          (0, demo_util.drawSkeleton)(keypoints, minPartConfidence, ctx);
+          (0, utils.drawSkeleton)(keypoints, minPartConfidence, ctx);
         }
         if (guiState.output.showBoundingBox) {
-          (0, demo_util.drawBoundingBox)(keypoints, ctx);
+          (0, utils.drawBoundingBox)(keypoints, ctx);
         }
       }
     });
@@ -173,7 +178,7 @@ async function bindPage() {
 
   setupDat([], net, guiState);
   setupFPS();
-  detectPoseInRealTime(video, net);
+  detectPoseInRealTime(video, canvas, ctx);
 }
 
 navigator.getUserMedia =
